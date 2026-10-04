@@ -1,0 +1,1563 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>World of Music</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(
+        135deg,
+        #1A0D00,
+        #2B1700,
+        #5A3200
+    );
+    color: white;
+    overflow-x: hidden; 
+}
+
+
+/* ==================================================
+   HEADER
+================================================== */
+
+header {
+    height: 600px;
+    position: relative;
+    overflow: hidden;
+    background: transparent;
+}
+
+
+/* ==================================================
+   AREA CAROUSEL
+================================================== */
+
+.jalur-container {
+
+    position: absolute;
+
+    top: 25px;
+    left: 0;
+
+    width: 100%;
+    height: 190px;
+
+    overflow: visible;
+
+    z-index: 2;
+
+    /*
+       Ini bukan lagi carousel
+       berisi kartu-kartu terpisah.
+
+       Canvas di dalamnya adalah
+       SATU STICKER PANJANG.
+    */
+}
+
+
+/* ==================================================
+   CANVAS
+================================================== */
+
+#canvasSticker {
+
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    width: 100%;
+    height: 190px;
+
+    display: block;
+
+    pointer-events: auto;
+
+    cursor: default;
+}
+
+/* ==================================================
+   AREA TENGAH
+================================================== */
+
+.tengah {
+
+    position: absolute;
+
+    top: 205px;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    width: 90%;
+    max-width: 900px;
+
+    text-align: center;
+
+    z-index: 10;
+}
+
+
+/* ==================================================
+   JUDUL
+================================================== */
+
+.tengah h1 {
+
+    font-size: 58px;
+
+    margin: 0 0 18px;
+
+    letter-spacing: 2px;
+
+    text-shadow:
+        0 4px 15px rgba(0,0,0,0.6);
+}
+
+
+/* ==================================================
+   DESKRIPSI
+================================================== */
+
+.tengah p {
+
+    font-size: 18px;
+
+    line-height: 1.6;
+
+    margin: 0 auto 30px;
+
+    max-width: 800px;
+
+    color: #f4e7d5;
+}
+
+
+/* ==================================================
+   BUTTON
+================================================== */
+
+.tombol-container {
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 12px;
+
+    flex-wrap: wrap;
+
+    font-weight: bold;
+}
+
+
+.tombol {
+
+    padding: 13px 22px;
+
+    border: 2px solid white;
+
+    border-radius: 8px;
+
+    background: rgba(0,0,0,0.25);
+
+    color: white;
+
+    text-decoration: none;
+
+    font-size: 15px;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;  }
+
+.tombol.bootcamp {
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+}
+
+
+.tombol:hover {
+
+    background: white;
+
+    color: #2B1700;
+
+    transform: translateY(-3px);
+}
+
+
+/* ==================================================
+   BAGIAN BAWAH
+================================================== */
+
+.bagian-bawah {
+
+    position: absolute;
+
+    bottom: 0;
+    left: 0;
+
+    width: 100%;
+
+    padding: 30px;
+
+    text-align: center;
+
+    background: rgba(0,0,0,0.18);
+
+    z-index: 5;
+}
+
+
+.bagian-bawah h2 {
+
+    margin: 0 0 8px;
+
+    font-size: 26px;
+}
+
+
+.bagian-bawah p {
+
+    margin: 0;
+
+    color: #d9c8b5;
+}
+
+
+/* ==================================================
+   HP
+================================================== */
+
+@media (max-width: 700px) {
+
+    .jalur-container {
+
+        top: 30px;
+
+        height: 170px;
+    }
+
+
+    #canvasSticker {
+
+        height: 170px;
+    }
+
+
+    .tengah {
+
+        top: 190px;
+    }
+
+
+    .tengah h1 {
+
+        font-size: 42px;
+    }
+
+
+    .tengah p {
+
+        font-size: 16px;
+
+        max-width: 90%;
+    }
+
+
+    .tombol {
+
+        padding: 11px 17px;
+
+        font-size: 14px;
+    }
+
+}
+/* ==================================================
+   IMAGE VIEWER
+================================================== */
+
+#imageViewer {
+    display: none;
+
+    position: fixed;
+    inset: 0;
+
+    background: rgba(0, 0, 0, 0.88);
+
+    z-index: 9999;
+
+    justify-content: center;
+    align-items: center;
+
+    padding: 30px;
+
+    cursor: zoom-out;
+}
+
+#imageViewer.active {
+    display: flex;
+}
+
+#imageViewer img {
+    max-width: 92vw;
+    max-height: 90vh;
+
+    object-fit: contain;
+
+    border-radius: 10px;
+
+    box-shadow:
+        0 10px 40px rgba(0,0,0,0.7);
+
+    cursor: default;
+
+    user-select: none;
+}
+
+#closeImageViewer {
+    position: fixed;
+
+    top: 20px;
+    right: 25px;
+
+    width: 45px;
+    height: 45px;
+
+    border: none;
+    border-radius: 50%;
+
+    background: rgba(0,0,0,0.6);
+
+    color: white;
+
+    font-size: 30px;
+    line-height: 45px;
+
+    cursor: pointer;
+
+    z-index: 10000;
+}
+
+#closeImageViewer:hover {
+    background: rgba(255,255,255,0.2);
+}
+</style>
+</head>
+
+
+<body>
+
+<header>
+
+
+    <!-- ==================================================
+         SATU STICKER PANJANG
+    ================================================== -->
+
+    <div class="jalur-container">
+
+        <canvas id="canvasSticker"></canvas>
+
+    </div>
+
+
+
+    <!-- ==================================================
+         TENGAH
+    ================================================== -->
+
+    <div class="tengah">
+
+        <h1>
+            World of Music
+        </h1>
+
+
+        <p>
+            Suatu platform yang hidup, sebagai meja statis untuk belajar lebih dalam pada bidang musik, mengikuti berbagai event, memanfaatkan semua fasilitas, perluas wawasan-mu dengan World of Music!
+        </p>
+
+
+        <div class="tombol-container">
+
+            <a href="#" class="tombol">
+                Bootcamp
+            </a>
+
+            <a href="#" class="tombol">
+                Event
+            </a>
+
+            <a href="#" class="tombol">
+                Books
+            </a>
+
+            <a href="#" class="tombol">
+                Feedback
+            </a>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ==================================================
+         BAGIAN BAWAH
+    ================================================== -->
+
+    <div class="bagian-bawah">
+
+        <h2>
+            Belajar. Berkarya. Terhubung.
+        </h2>
+
+        <p>
+            Tempat untuk berkembang bersama di dunia musik.
+        </p>
+
+    </div>
+
+</header>
+<!-- ==================================================
+     IMAGE VIEWER
+================================================== -->
+
+<div id="imageViewer">
+
+    <button id="closeImageViewer">
+        ×
+    </button>
+
+    <img
+        id="imageViewerImg"
+        src=""
+        alt="Preview"
+    >
+
+</div>
+
+
+<script>
+
+/* ==================================================
+   FOTO
+================================================== */
+
+const foto = [
+
+    "image/Foto Header 5.jpeg",
+    "image/Foto header 1.jpeg",
+    "image/Foto header 4.jpeg",
+    "image/Foto header 9.jpeg",
+    "image/Foto header 3.jpeg",
+    "image/Foto header 2.jpeg",
+    "image/Foto header 6.jpeg",
+    "image/Foto header 8.jpeg",
+    "image/Foto header 7.jpeg"
+    
+
+];
+
+
+/* ==================================================
+   POLA COLLAGE
+================================================== */
+
+const pola = [
+
+    [
+        ["a", "d"],
+        ["b", "c"]
+    ],
+
+    [
+        ["c", "b"],
+        ["d", "a"]
+    ],
+
+    [
+        ["d", "b", "c"],
+        ["c", "a", "d"]
+    ],
+
+    [
+        ["a", "e", "b"],
+        ["f", "c", "d"]
+    ],
+
+    [
+        ["a", "d"],
+        ["c", "b"]
+    ],
+
+    [
+        ["a", "e", "b"],
+        ["c", "d", "f"]
+    ]
+
+];
+/* ==================================================
+   CANVAS
+================================================== */
+
+const canvas =
+    document.getElementById("canvasSticker");
+
+const ctx =
+    canvas.getContext("2d");
+ctx.imageSmoothingEnabled = true;
+ctx.imageSmoothingQuality = "high";
+
+
+/* ==================================================
+   UKURAN STICKER
+================================================== */
+
+const blokLebar = 300
+;
+
+const blokTinggi = 400;
+
+const jumlahBlok = 35;
+
+
+/*
+   Satu texture panjang.
+
+   Ini benar-benar SATU gambar besar
+   yang berisi seluruh collage.
+*/
+
+const textureWidth =
+    blokLebar * jumlahBlok;
+
+const textureHeight =
+    blokTinggi;
+
+
+
+/* ==================================================
+   CANVAS TEXTURE
+================================================== */
+
+const texture =
+    document.createElement("canvas");
+
+texture.width =
+    textureWidth;
+
+texture.height =
+    textureHeight;
+
+
+const textureCtx =
+    texture.getContext("2d");
+textureCtx.imageSmoothingEnabled = true;
+textureCtx.imageSmoothingQuality = "high";
+const areaFoto = [];
+
+
+/* ==================================================
+   LOAD FOTO
+================================================== */
+
+const gambar = [];
+
+let gambarSelesai = 0;
+
+
+foto.forEach((src, index) => {
+
+    const img =
+        new Image();
+
+    img.src = src;
+
+
+    img.onload = () => {
+
+        gambar[index] =
+            img;
+
+        gambarSelesai++;
+
+        if (
+            gambarSelesai === foto.length
+        ) {
+
+            buatSticker();
+
+            resizeCanvas();
+
+            animasi();
+
+        }
+
+    };
+
+});
+
+
+
+/* ==================================================
+   FUNGSI MENGGAMBAR FOTO
+================================================== */
+
+function gambarFoto(
+    ctx,
+    img,
+    x,
+    y,
+    width,
+    height
+) {
+
+    const ratio =
+        Math.max(
+            width / img.width,
+            height / img.height
+        );
+
+    const drawWidth =
+        img.width * ratio;
+
+    const drawHeight =
+        img.height * ratio;
+
+    const offsetX =
+        x +
+        (width - drawWidth) / 2;
+
+    const offsetY =
+        y +
+        (height - drawHeight) / 2;
+
+    ctx.drawImage(
+        img,
+        offsetX,
+        offsetY,
+        drawWidth,
+        drawHeight
+    );
+}
+/* ==================================================
+   BUAT SATU BLOK COLLAGE
+================================================== */
+
+function buatBlok(
+    index,
+    x
+) {
+
+    const polaSekarang =
+        pola[index % pola.length];
+
+    const rows =
+        polaSekarang.length;
+
+    const cols =
+        polaSekarang[0].length;
+
+    const cellWidth =
+        blokLebar / cols;
+
+    const cellHeight =
+        blokTinggi / rows;
+
+    const posisi = {};
+
+    // Cari semua huruf unik
+    for (
+        let r = 0;
+        r < rows;
+        r++
+    ) {
+
+        for (
+            let c = 0;
+            c < cols;
+            c++
+        ) {
+
+            const huruf =
+                polaSekarang[r][c];
+
+            if (
+                posisi[huruf]
+            ) {
+                continue;
+            }
+
+            let minR = r;
+            let maxR = r;
+
+            let minC = c;
+            let maxC = c;
+
+            // Cari seluruh area huruf tersebut
+            for (
+                let rr = 0;
+                rr < rows;
+                rr++
+            ) {
+
+                for (
+                    let cc = 0;
+                    cc < cols;
+                    cc++
+                ) {
+
+                    if (
+                        polaSekarang[rr][cc]
+                        === huruf
+                    ) {
+
+                        minR =
+                            Math.min(
+                                minR,
+                                rr
+                            );
+
+                        maxR =
+                            Math.max(
+                                maxR,
+                                rr
+                            );
+
+                        minC =
+                            Math.min(
+                                minC,
+                                cc
+                            );
+
+                        maxC =
+                            Math.max(
+                                maxC,
+                                cc
+                            );
+                    }
+                }
+            }
+
+            posisi[huruf] = {
+                minR,
+                maxR,
+                minC,
+                maxC
+            };
+        }
+    }
+
+    // Gambar semua foto
+    // pada blok tersebut
+    let nomorFoto = 0;
+
+    Object.keys(posisi)
+        .forEach(huruf => {
+
+            const area =
+                posisi[huruf];
+const fotoIndex =
+                (
+                    index +
+                    nomorFoto
+                ) % gambar.length;
+
+            const img =
+                gambar[fotoIndex];
+
+            const width =
+                (
+                    area.maxC -
+                    area.minC +
+                    1
+                ) * cellWidth;
+
+            const height =
+                (
+                    area.maxR -
+                    area.minR +
+                    1
+                ) * cellHeight;
+
+areaFoto.push({
+
+    x:
+        x +
+        area.minC *
+        cellWidth,
+
+    y:
+        area.minR *
+        cellHeight,
+
+    width:
+        width - 20,
+
+    height:
+        height - 20,
+
+    src:
+        foto[fotoIndex]
+
+});
+
+
+            
+
+            gambarFoto(
+                textureCtx,
+                img,
+
+                x +
+                area.minC *
+                cellWidth,
+
+                area.minR *
+                cellHeight,
+
+                width - 20,
+                height - 20
+            );
+
+            nomorFoto++;
+
+        });
+}/* ==================================================
+   BUAT STICKER PANJANG
+================================================== */
+
+function buatSticker() {
+
+    areaFoto.length = 0;
+
+    textureCtx.clearRect(
+        0,
+        0,
+        textureWidth,
+        textureHeight
+    );
+
+    for (
+        let i = 0;
+        i < jumlahBlok;
+        i++
+    ) {
+
+        buatBlok(
+            i,
+            i * blokLebar
+        );
+
+    }
+
+}
+
+
+
+/* ==================================================
+   RESIZE CANVAS
+================================================== */
+
+function resizeCanvas() {
+
+    const dpr =
+        window.devicePixelRatio || 1;
+
+
+    const width =
+        window.innerWidth;
+
+
+    const height =
+    window.innerWidth <= 700
+    ? 200
+    : 240;
+
+
+    canvas.width =
+        width * dpr;
+
+
+    canvas.height =
+        height * dpr;
+
+
+    canvas.style.width =
+        width + "px";
+
+
+    canvas.style.height =
+        height + "px";
+
+
+    ctx.setTransform(
+        dpr,
+        0,
+        0,
+        dpr,
+        0,
+        0
+    );
+
+}
+
+
+
+/* ==================================================
+   POSISI PUTARAN
+================================================== */
+
+let rotasi =
+    0;
+
+
+/*
+   Kecepatan rotasi.
+
+   Bukan lagi gerakan "keluar kanan
+   lalu masuk kiri".
+
+   Ini adalah rotasi sticker
+   mengelilingi silinder.
+*/
+
+const kecepatan =
+    0.002;
+
+
+
+/* ==================================================
+   GAMBAR SILINDER
+================================================== */
+
+function gambarSilinder() {
+
+    const width =
+        window.innerWidth;
+
+    const height =
+    window.innerWidth <= 700
+    ? 170
+    : 190;
+
+    ctx.clearRect(
+        0,
+        0,
+        width,
+        canvas.height
+    );
+
+
+    const centerY =
+        height / 2;
+
+
+    const stickerHeight =
+        Math.min(
+            200,
+            height * 0.82
+        );
+
+
+    /*
+       Radius permukaan.
+
+       Lebih besar = lengkungan lebih lembut.
+       Lebih kecil = lebih bulat.
+    */
+
+    const radius =
+        Math.max(
+            width * 0.58,
+            480
+        );
+
+
+    /*
+       Titik rotasi sticker.
+
+       Dibuat berdasarkan panjang
+       texture yang sebenarnya.
+    */
+
+    const rotasiNormal =
+        (
+            rotasi %
+            (Math.PI * 2)
+        ) /
+        (Math.PI * 2);
+
+
+    /*
+       Kita menggambar dengan resolusi
+       horizontal yang lebih rapat.
+
+       Ini mengurangi efek "guncang".
+    */
+
+    const langkah = 1;
+
+
+    for (
+        let screenX = 0;
+        screenX < width;
+        screenX += langkah
+    ) {
+
+
+        /*
+           Posisi relatif dari tengah.
+        */
+
+        const normalized =
+            (
+                screenX -
+                width / 2
+            ) /
+            (width / 2);
+
+
+        /*
+           Sudut permukaan silinder.
+
+           Tengah = 0
+
+           Kiri = negatif
+
+           Kanan = positif
+        */
+
+        const angle =
+            normalized *
+            Math.PI *
+            0.56;
+
+
+        /*
+           Kedalaman permukaan.
+
+           1 = tepat menghadap kita.
+
+           0 = hampir berada di samping.
+        */
+
+        const depth =
+            Math.cos(angle);
+
+
+        /*
+           Jangan menggambar bagian yang
+           sudah terlalu jauh di belakang.
+        */
+
+        if (depth <= 0.005) {
+            continue;
+        }
+
+
+        /*
+           Posisi sumber texture.
+
+           INI ADALAH SATU STICKER.
+           Bukan foto individual.
+        */
+
+        let sourceNormalized =
+            rotasiNormal +
+            angle / (Math.PI * 2);
+
+
+        sourceNormalized =
+            (
+                sourceNormalized % 1 + 1
+            ) % 1;
+
+
+        /*
+           Koordinat sumber texture.
+
+           Dibulatkan supaya browser
+           tidak terus menerus melakukan
+           sampling pada subpixel yang
+           berubah-ubah.
+        */
+
+        const sourceX =
+            Math.floor(
+                sourceNormalized *
+                textureWidth
+            );
+
+
+        /*
+           Ambil satu kolom texture.
+
+           Lebarnya dibuat tetap.
+
+           Ini penting untuk mengurangi
+           shimmer / jitter.
+        */
+
+        const sourceWidth = 2;
+
+
+        /*
+           Efek lengkung vertikal.
+
+           Sisi kiri dan kanan sedikit
+           naik sehingga keseluruhan
+           sticker terasa membungkus gelas.
+        */
+
+        const curve =
+            (
+                1 -
+                depth
+            ) * 100;
+
+
+        /*
+           Tinggi permukaan.
+
+           Tengah sedikit lebih besar.
+        */
+
+        const drawHeight =
+            stickerHeight *
+            (
+                0.88 +
+                depth * 0.12
+            );
+
+
+        const y =
+            centerY -
+            drawHeight / 2 +
+            curve;
+
+
+        /*
+           Lebar kolom di layar.
+
+           Bagian tengah normal.
+
+           Sisi makin terkompresi.
+        */
+
+        const drawWidth =
+            langkah *
+            (
+                0.75 +
+                depth * 0.25
+            );
+
+
+        /*
+           Gambar kolom.
+        */
+
+        ctx.drawImage(
+
+            texture,
+
+            sourceX,
+            0,
+
+            sourceWidth,
+            textureHeight,
+
+            screenX -
+            drawWidth / 2,
+
+            y,
+
+            drawWidth,
+            drawHeight
+
+        );
+
+    }
+
+}
+
+
+/* ==================================================
+   ANIMASI
+================================================== */
+
+function animasi() {
+
+    rotasi +=
+        kecepatan;
+
+
+    gambarSilinder();
+
+
+    requestAnimationFrame(
+        animasi
+    );
+
+}
+
+/* ==================================================
+   IMAGE VIEWER
+================================================== */
+
+const imageViewer =
+    document.getElementById("imageViewer");
+
+const imageViewerImg =
+    document.getElementById("imageViewerImg");
+
+const closeImageViewer =
+    document.getElementById("closeImageViewer");
+
+
+/* ==================================================
+   CARI FOTO YANG DIKLIK
+================================================== */
+
+function cariFotoDariKlik(event) {
+
+    const rect =
+        canvas.getBoundingClientRect();
+
+
+    const screenX =
+        event.clientX -
+        rect.left;
+
+
+    const screenY =
+        event.clientY -
+        rect.top;
+
+
+    const width =
+        rect.width;
+
+
+    const height =
+        window.innerWidth <= 700
+        ? 170
+        : 190;
+
+
+    if (
+        screenX < 0 ||
+        screenX > width ||
+        screenY < 0 ||
+        screenY > height
+    ) {
+
+        return null;
+
+    }
+
+
+    /* ==============================
+       POSISI SILINDER
+    ============================== */
+
+    const centerY =
+        height / 2;
+
+
+    const stickerHeight =
+        Math.min(
+            200,
+            height * 0.82
+        );
+
+
+    const normalized =
+        (
+            screenX -
+            width / 2
+        ) /
+        (width / 2);
+
+
+    const angle =
+        normalized *
+        Math.PI *
+        0.56;
+
+
+    const depth =
+        Math.cos(angle);
+
+
+    if (
+        depth <= 0.005
+    ) {
+
+        return null;
+
+    }
+
+
+    /* ==============================
+       CARI POSISI DI TEXTURE
+    ============================== */
+
+    const rotasiNormal =
+        (
+            rotasi %
+            (Math.PI * 2)
+        ) /
+        (Math.PI * 2);
+
+
+    let sourceNormalized =
+        rotasiNormal +
+        angle /
+        (Math.PI * 2);
+
+
+    sourceNormalized =
+        (
+            sourceNormalized % 1 +
+            1
+        ) % 1;
+
+
+    const sourceX =
+        Math.floor(
+            sourceNormalized *
+            textureWidth
+        );
+
+
+    const curve =
+        (
+            1 -
+            depth
+        ) * 100;
+
+
+    const drawHeight =
+        stickerHeight *
+        (
+            0.88 +
+            depth * 0.12
+        );
+
+
+    const y =
+        centerY -
+        drawHeight / 2 +
+        curve;
+
+
+    const textureY =
+        (
+            screenY - y
+        ) /
+        drawHeight *
+        textureHeight;
+
+
+    if (
+        textureY < 0 ||
+        textureY > textureHeight
+    ) {
+
+        return null;
+
+    }
+
+
+    /* ==============================
+       CARI FOTO
+       DARI DEPAN KE BELAKANG
+    ============================== */
+
+    for (
+        let i =
+            areaFoto.length - 1;
+        i >= 0;
+        i--
+    ) {
+
+        const area =
+            areaFoto[i];
+
+
+        if (
+
+            sourceX >= area.x &&
+
+            sourceX <=
+            area.x +
+            area.width &&
+
+            textureY >= area.y &&
+
+            textureY <=
+            area.y +
+            area.height
+
+        ) {
+
+            return area.src;
+
+        }
+
+    }
+
+
+    return null;
+}
+
+
+/* ==================================================
+   BUKA GAMBAR
+================================================== */
+
+canvas.addEventListener(
+    "click",
+    function(event) {
+
+        const src =
+            cariFotoDariKlik(event);
+
+
+        if (!src) {
+            return;
+        }
+
+
+        imageViewerImg.src =
+            src;
+
+
+        imageViewer.classList.add(
+            "active"
+        );
+
+
+        document.body.style.overflow =
+            "hidden";
+
+    }
+);
+
+
+/* ==================================================
+   KURSOR
+================================================== */
+
+canvas.addEventListener(
+    "mousemove",
+    function(event) {
+
+        const src =
+            cariFotoDariKlik(event);
+
+
+        canvas.style.cursor =
+            src
+            ? "pointer"
+            : "default";
+
+    }
+);
+
+
+/* ==================================================
+   TUTUP
+================================================== */
+
+function tutupImageViewer() {
+
+    imageViewer.classList.remove(
+        "active"
+    );
+
+
+    imageViewerImg.src = "";
+
+
+    document.body.style.overflow =
+        "";
+
+}
+
+
+/* Tombol X */
+
+closeImageViewer.addEventListener(
+    "click",
+    tutupImageViewer
+);
+
+
+/* Klik area gelap */
+
+imageViewer.addEventListener(
+    "click",
+    function(event) {
+
+        if (
+            event.target ===
+            imageViewer
+        ) {
+
+            tutupImageViewer();
+
+        }
+
+    }
+);
+
+
+/* Tombol Escape */
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.key === "Escape"
+        ) {
+
+            tutupImageViewer();
+
+        }
+
+    }
+);
+
+
+/* ==================================================
+   RESIZE
+================================================== */
+
+window.addEventListener(
+    "resize",
+    resizeCanvas
+);
+
+</script>
+
+</body>
+</html>
