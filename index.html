@@ -535,13 +535,17 @@ ctx.imageSmoothingQuality = "high";
    UKURAN STICKER
 ================================================== */
 
-const blokLebar = 300
-;
+const blokLebar =
+    window.innerWidth <= 700
+        ? 400
+        : 300;
 
 const blokTinggi = 400;
 
-const jumlahBlok = 35;
-
+const jumlahBlok =
+    window.innerWidth <= 700
+        ? 12
+        : 35;
 
 /*
    Satu texture panjang.
