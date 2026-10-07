@@ -243,49 +243,90 @@ header {
    HP
 ================================================== */
 
+/* ==================================================
+   RESPONSIVE HP
+================================================== */
+
 @media (max-width: 700px) {
 
     header {
         height: 760px;
     }
 
+    /* ==============================
+       CAROUSEL
+    ============================== */
+
     .jalur-container {
         top: 30px;
+        width: 100%;
         height: 170px;
     }
 
     #canvasSticker {
+        width: 100%;
         height: 170px;
     }
 
+
+    /* ==============================
+       BAGIAN TENGAH
+    ============================== */
+
     .tengah {
-        top: 210px;
+        top: 215px;
+        width: 92%;
+        max-width: none;
     }
 
     .tengah h1 {
-        font-size: 42px;
+        font-size: clamp(32px, 9vw, 42px);
+        line-height: 1.1;
+        margin-bottom: 15px;
     }
 
     .tengah p {
-        font-size: 16px;
-        max-width: 90%;
+        width: 100%;
+        max-width: 500px;
+        font-size: 15px;
+        line-height: 1.5;
+        margin-bottom: 24px;
+    }
+
+
+    /* ==============================
+       BUTTON
+    ============================== */
+
+    .tombol-container {
+        width: 100%;
+        gap: 8px;
+        padding: 0 5px;
     }
 
     .tombol {
-        padding: 10px 12px;
+        padding: 10px 13px;
         font-size: 13px;
+        white-space: nowrap;
     }
 
-    .tombol-container {
-        gap: 8px;
-    }
+
+    /* ==============================
+       BAGIAN BAWAH
+    ============================== */
 
     .bagian-bawah {
-        padding: 25px 15px;
+        padding: 22px 15px;
     }
 
     .bagian-bawah h2 {
-        font-size: 26px;
+        font-size: 22px;
+        line-height: 1.25;
+    }
+
+    .bagian-bawah p {
+        font-size: 14px;
+        line-height: 1.5;
     }
 }
 /* ==================================================
