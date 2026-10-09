@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<title>Bootcamp | World of Music</title>
+
+<style>
+
+/* ==============================
+   FOOTER GAMBAR
+============================== */
+
+.footer-slider img {
+    width: 100%;
+    height: 450px;
+
+    object-fit: fill;
+    display: block;
+
+    opacity: 1;
+    transform: translateX(0);
+
+    transition:
+        opacity 0.6s ease,
+        transform 0.6s ease;
+}
+.footer-slider img.ganti {
+    opacity: 0;
+    transform: translateX(-40px);
+}
+
+.footer {
+    border-top: 3px solid rgba(255, 255, 255, 0.25);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+
+/* ==============================
+   WARNA KHUSUS HEADER
+============================== */
+
+.header {
+    background: linear-gradient(
+        135deg,
+        #1A0D00,
+        #3A2108,
+        #5A3200
+    );
+    color: white;
+}
+
+
+.header {
+    border-top: 1px solid rgba(255, 255, 255, 0.25);
+    border-bottom: 3px solid rgba(255, 255, 255, 0.25);
+}
+    /* ==============================
+       TRANSISI CARD
+    ============================== */
+
+    .bootcamp-card {
+        opacity: 1;
+        transform: translateX(0);
+        transition:
+            transform 0.3s ease,
+            opacity 0.2s ease;
+    }
+
+    .bootcamp-card.ganti {
+        opacity: 0;
+        transform: translateX(35px);
+    }
+
+
+    /* ==============================
+       BODY
+    ============================== */
+
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #2B1700;
+        color: white;
+        min-height: 100vh;
+    }
+
+
+    /* ==============================
+       KEMBALI
+    ============================== */
+
+    .kembali {
+        position: absolute;
+        top: 25px;
+        left: 25px;
+        color: white;
+        text-decoration: none;
+        font-size: 15px;
+        opacity: 0.8;
+        z-index: 10;
+    }
+
+    .kembali:hover {
+        opacity: 1;
+    }
+
+
+    /* ==============================
+       HEADER
+    ============================== */
+
+    .header {
+        text-align: center;
+        padding: 75px 20px 20px;
+    }
+
+    .header h1 {
+        margin: 0 0 10px;
+        font-size: 44px;
+    }
+
+    .header p {
+        margin: 0 auto;
+        max-width: 650px;
+        color: #d9c8b5;
+        line-height: 1.6;
+    }
+
+
+    /* ==============================
+       AREA BOOTCAMP
+    ============================== */
+
+    .bootcamp-wrapper {
+        width: 92%;
+        max-width: 950px;
+        margin: 40px auto 70px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+    }
+
+
+    /* ==============================
+       TOMBOL NEXT / BACK
+    ============================== */
+
+    .nav-button {
+        width: 55px;
+        height: 55px;
+        flex-shrink: 0;
+
+        border: 2px solid rgba(255,255,255,0.7);
+        border-radius: 50%;
+
+        background: rgba(255,255,255,0.07);
+        color: white;
+
+        font-size: 25px;
+        cursor: pointer;
+
+        transition: 0.2s;
+    }
+
+    .nav-button:hover {
+        background: rgba(255,255,255,0.16);
+        transform: scale(1.06);
+    }
+
+    .nav-button:active {
+        transform: scale(0.96);
+    }
+
+
+    /* ==============================
+       CARD
+    ============================== */
+
+    .bootcamp-card {
+        width: 100%;
+        max-width: 700px;
+        min-height: 400px;
+
+        padding: 45px 40px;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+
+        text-align: center;
+
+        background: rgba(255,255,255,0.07);
+        border: 1px solid rgba(255,255,255,0.18);
+        border-radius: 22px;
+
+        box-shadow:
+            0 15px 40px
+            rgba(0,0,0,0.25);
+
+        box-sizing: border-box;
+    }
+
+
+    /* ==============================
+       ISI CARD
+    ============================== */
+
+    .bootcamp-card h2 {
+        margin: 0 0 18px;
+        font-size: 34px;
+    }
+
+    .bootcamp-card p {
+        max-width: 580px;
+        margin: 0 auto 28px;
+
+        color: #d9c8b5;
+        line-height: 1.7;
+        font-size: 16px;
+    }
+
+   .bootcamp-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    margin-top: auto;
+    gap: 10px;
+}
+
+
+.lihat-button,
+.follow-button {
+    padding: 10px 18px;
+
+    border-radius: 10px;
+
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+
+    transition: 0.2s;
+}
+
+
+/* VIEW BOOTCAMP */
+
+.lihat-button {
+    border: 2px solid white;
+}
+
+
+/* FOLLOW BOOTCAMP */
+
+.follow-button {
+    border: 2px solid #d9c8b5;
+
+    background: rgba(255,255,255,0.08);
+}
+
+
+/* HOVER */
+
+.lihat-button:hover {
+    background: white;
+    color: #2B1700;
+}
+
+
+.follow-button:hover {
+    background: rgba(255,255,255,0.18);
+    transform: translateY(-2px);
+}
+
+
+    /* ==============================
+       INDIKATOR
+    ============================== */
+
+    .indikator {
+        text-align: center;
+        margin-top: -40px;
+        margin-bottom: 60px;
+
+        color: #d9c8b5;
+        font-size: 14px;
+    }
+
+
+    /* ==============================
+       MOBILE
+    ============================== */
+
+    @media (max-width: 700px) {
+
+        .header {
+            padding-top: 75px;
+        }
+
+        .header h1 {
+            font-size: 36px;
+        }
+
+        .header p {
+            font-size: 15px;
+        }
+
+        .bootcamp-wrapper {
+            width: 96%;
+            gap: 8px;
+        }
+
+        .nav-button {
+            width: 44px;
+            height: 44px;
+            font-size: 20px;
+        }
+
+        .bootcamp-card {
+            min-height: 390px;
+            padding: 30px 20px;
+        }
+
+        .bootcamp-card h2 {
+            font-size: 27px;
+        }
+
+        .bootcamp-card p {
+            font-size: 15px;
+        }
+    }
+
+</style>
+
+
+</head>
+
+<body>
+
+
+<!-- ==============================
+     KEMBALI
+============================== -->
+
+<a href="index.html" class="kembali">
+    ← Kembali
+</a>
+
+
+<!-- ==============================
+     HEADER
+============================== -->
+
+<header class="header">
+
+    <h1>
+        Bootcamp
+    </h1>
+
+    <p>
+        Program pelatihan intensif dan berjangka pendek yang dirancang untuk membantu kamu menguasai berbagai aspek dan bidang dalam musik. Manfaatkan berbagai video, gambar, fasilitas lainnya untuk mendukung perjalanan musik kamu supaya perjalanan-mu tidak bosan, hidup, dan efektif!
+    </p>
+
+</header>
+
+
+<!-- ==============================
+     BOOTCAMP
+============================== -->
+
+<main>
+
+    <div class="bootcamp-wrapper">
+
+        <button
+            class="nav-button"
+            id="backButton">
+            ←
+        </button>
+
+
+       <div class="bootcamp-card" id="bootcampCard">
+
+    <h2 id="bootcampTitle">
+        Beginner Guitar
+    </h2>
+
+    <p id="bootcampDescription">
+        Program untuk kamu yang ingin mulai belajar gitar dari dasar dan membangun kemampuan bermain secara bertahap.
+    </p>
+
+    <div class="bootcamp-actions">
+
+        <a
+            href="#"
+            class="lihat-button"
+            id="bootcampLink"
+        >
+            View Bootcamp
+        </a>
+
+        <a
+            href="#"
+            class="follow-button"
+            id="followBootcamp"
+        >
+            Follow Bootcamp
+        </a>
+
+    </div>
+
+</div>
+
+
+        <button
+            class="nav-button"
+            id="nextButton">
+            →
+        </button>
+
+    </div>
+
+
+    
+
+</main>
+
+<footer class="footer">
+
+    <div class="footer-slider">
+
+        <img
+            id="footerImage"
+            src="image/Foto Footer 1.jpeg"
+            alt="World of Music"
+        >
+
+    </div>
+
+</footer>
+
+
+
+<script>
+
+    /* ==============================
+       DATA BOOTCAMP
+    ============================== */
+
+    const bootcamps = [
+
+        {
+            title: "Beginner Guitar",
+
+            description:
+                "Program untuk kamu yang ingin mulai belajar gitar dari dasar dan membangun kemampuan bermain secara bertahap.",
+
+            link: "#"
+        },
+
+
+        {
+            title: "Guitar Development",
+
+            description:
+                "Program untuk pemain yang sudah memiliki dasar gitar dan ingin mengembangkan teknik, pemahaman musik, dan kemampuan bermain.",
+
+            link: "#"
+        },
+
+
+        {
+            title: "Worship Guitar",
+
+            description:
+                "Program untuk mengembangkan kemampuan bermain gitar dalam konteks musik worship, mulai dari permainan dasar hingga membangun suasana musik.",
+
+            link: "#"
+        }
+
+    ];
+
+
+    /* ==============================
+       ELEMENT
+    ============================== */
+
+    const title =
+        document.getElementById("bootcampTitle");
+
+    const description =
+        document.getElementById("bootcampDescription");
+
+    const link =
+        document.getElementById("bootcampLink");
+
+   
+    const card =
+        document.getElementById("bootcampCard");
+
+    const backButton =
+        document.getElementById("backButton");
+
+    const nextButton =
+        document.getElementById("nextButton");
+
+
+    /* ==============================
+       POSISI SAAT INI
+    ============================== */
+
+    let current = 0;
+
+
+    /* ==============================
+       TAMPILKAN BOOTCAMP
+    ============================== */
+
+    function tampilkanBootcamp() {
+
+        card.classList.add("ganti");
+
+
+        setTimeout(function() {
+
+            const bootcamp =
+                bootcamps[current];
+
+            title.textContent =
+                bootcamp.title;
+
+            description.textContent =
+                bootcamp.description;
+
+            link.href =
+                bootcamp.link;
+
+
+                       card.classList.remove("ganti");
+
+        }, 200);
+
+    }
+
+
+    /* ==============================
+       NEXT
+    ============================== */
+
+    nextButton.addEventListener(
+        "click",
+        function() {
+
+            current++;
+
+            if (
+                current >=
+                bootcamps.length
+            ) {
+                current = 0;
+            }
+
+            tampilkanBootcamp();
+
+        }
+    );
+
+
+    /* ==============================
+       BACK
+    ============================== */
+
+    backButton.addEventListener(
+        "click",
+        function() {
+
+            current--;
+
+            if (current < 0) {
+
+                current =
+                    bootcamps.length - 1;
+
+            }
+
+            tampilkanBootcamp();
+
+        }
+    );
+
+/* ==============================
+   FOOTER SLIDER
+============================== */
+
+const footerImage = document.getElementById("footerImage");
+
+const footerImages = [
+    "image/Foto Footer 1.jpeg",
+    "image/Foto Footer 2.jpeg",
+    "image/Foto Footer 3.jpeg",
+    "image/Foto Footer 4.jpeg"
+];
+
+let footerCurrent = 0;
+
+setInterval(function() {
+    footerImage.classList.add("ganti");
+
+    setTimeout(function() {
+        footerCurrent++;
+
+        if (footerCurrent >= footerImages.length) {
+            footerCurrent = 0;
+        }
+
+        footerImage.src = footerImages[footerCurrent];
+
+        footerImage.classList.remove("ganti");
+    }, 600);
+
+}, 10000);
+</script>
+
+</body>
+
+</html>
