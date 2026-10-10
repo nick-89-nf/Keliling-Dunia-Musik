@@ -339,6 +339,8 @@
     }
 
 
+
+
 /* KHUSUS FOOTER DI HP */
 @media (max-width: 600px) {
     .footer {
@@ -357,8 +359,21 @@
         height: 220px;
         object-fit: fill;
         display: block;
+
+        opacity: 1;
+        transform: translateX(0);
+
+        transition:
+            opacity 0.6s ease,
+            transform 0.6s ease;
+    }
+
+    .footer-slider img.ganti {
+        opacity: 0;
+        transform: translateX(-40px);
     }
 }
+
 
 
 </style>
