@@ -302,16 +302,22 @@ header {
    RESPONSIVE HP
 ================================================== */
 
+
+/* ==============================
+   RESPONSIVE HP
+============================== */
+
 @media (max-width: 700px) {
 
-   header {
-    height: auto;
-    min-height: 300px;
-}
+    header {
+        height: auto;
+        min-height: 0;
+    }
 
     .jalur-container {
-        top: 30px;
+        top: 10px;
         height: 170px;
+        transform: translateY(-35px);
     }
 
     #canvasSticker {
@@ -319,35 +325,55 @@ header {
     }
 
     .tengah {
-    margin-top: 210px;
-}
+        margin-top: 120px;
+        width: 94%;
+    }
 
     .tengah h1 {
-        font-size: 42px;
+        font-size: clamp(30px, 8vw, 38px);
+        line-height: 1.15;
+        letter-spacing: 0.5px;
+        margin-bottom: 16px;
     }
 
     .tengah p {
-        font-size: 16px;
-        max-width: 90%;
-    }
-
-    .tombol {
-        padding: 10px 12px;
-        font-size: 13px;
+        font-size: 15px;
+        line-height: 1.6;
+        max-width: 100%;
     }
 
     .tombol-container {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        margin: 22px auto;
+    }
+
+    .tombol {
+        min-height: 130px;
+        padding: 14px 12px;
         gap: 8px;
+        font-size: 13px;
+    }
+
+    .tombol strong {
+        font-size: 16px;
+    }
+
+    .tombol span:not(.ikon-tombol) {
+        font-size: 12px;
+        line-height: 1.5;
     }
 
     .bagian-bawah {
+        margin-top: 25px;
         padding: 25px 15px;
     }
 
     .bagian-bawah h2 {
-        font-size: 26px;
+        font-size: 24px;
     }
 }
+
 
 /* ==================================================
    IMAGE VIEWER
