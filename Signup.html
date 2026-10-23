@@ -1,0 +1,363 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign Up | Keliling Dunia Musik</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    background: #1A0D00;
+    color: #F9E3A0;
+}
+
+.signup-card {
+    width: 100%;
+    max-width: 600px;
+    padding: 30px;
+    background: #2B1700;
+    border: 1px solid #80551D;
+    border-radius: 14px;
+}
+
+h1 {
+    margin: 0 0 8px;
+    text-align: center;
+    font-size: 25px;
+}
+
+.subtitle {
+    margin: 0 0 25px;
+    text-align: center;
+    color: #D4B875;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+label {
+    display: block;
+    margin: 15px 0 7px;
+    font-size: 14px;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #80551D;
+    border-radius: 7px;
+    outline: none;
+    background: #1A0D00;
+    color: #FFF5D9;
+    font-size: 15px;
+}
+
+input:focus {
+    border-color: #F9E3A0;
+}
+
+button {
+    width: 100%;
+    margin-top: 22px;
+    padding: 13px;
+    border: none;
+    border-radius: 7px;
+    background: #D4A64A;
+    color: #1A0D00;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+#status {
+    font-size: 13px;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+}
+
+.links {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 14px;
+    line-height: 2;
+}
+
+a {
+    color: #F9E3A0;
+}
+
+@media (max-width: 480px) {
+    .signup-card {
+        padding: 23px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<main class="signup-card">
+    <h1>Keliling Dunia Musik</h1>
+
+    <p class="subtitle">
+        Create an account and connect with the music community.
+    </p>
+
+    <form id="signup-form">
+        <label for="display-name">Display Name</label>
+        <input
+            id="display-name"
+            type="text"
+            maxlength="30"
+            autocomplete="nickname"
+            placeholder="Your community display name"
+            required
+        >
+
+        <label for="email">Email Address</label>
+        <input
+            id="email"
+            type="email"
+            autocomplete="email"
+            placeholder="you@example.com"
+            required
+        >
+
+        <label for="password">Password</label>
+        <input
+            id="password"
+            type="password"
+            minlength="8"
+            autocomplete="new-password"
+            placeholder="At least 8 characters"
+            required
+        >
+
+        <label for="confirm-password">Confirm Password</label>
+        <input
+            id="confirm-password"
+            type="password"
+            minlength="8"
+            autocomplete="new-password"
+            placeholder="Enter your password again"
+            required
+        >
+
+        <button id="signup-button" type="submit">
+            Create Account
+        </button>
+
+        <p id="status" role="status" aria-live="polite"></p>
+    </form>
+
+    <div class="links">
+        Already have an account?
+        <a href="login.html">Log In</a>
+        <br>
+        <a href="index.html">← Back to KDM</a>
+    </div>
+</main>
+
+<script type="module">
+import { initializeApp } from
+    "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+    getAuth,
+    createUserWithEmailAndPassword,
+    updateProfile,
+    sendEmailVerification,
+    signOut
+} from
+    "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+    getDatabase,
+    ref,
+    set
+} from
+    "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+// KDM Firebase project configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyA7EI83UKG_n6lwvNvH_ruqIvVtIstvVYw",
+    authDomain: "keliling-dunia-musik-chat.firebaseapp.com",
+    databaseURL: "https://keliling-dunia-musik-chat-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "keliling-dunia-musik-chat",
+    storageBucket: "keliling-dunia-musik-chat.firebasestorage.app",
+    messagingSenderId: "733182952839",
+    appId: "1:733182952839:web:7ac78e64b6182d8cb6ff22",
+    measurementId: "G-H0SXHRYSZR"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+
+auth.languageCode = "en";
+
+const form = document.getElementById("signup-form");
+const nameInput = document.getElementById("display-name");
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+const confirmInput = document.getElementById("confirm-password");
+const button = document.getElementById("signup-button");
+const status = document.getElementById("status");
+
+let signupCompleted = false;
+
+form.addEventListener("submit", async event => {
+    event.preventDefault();
+
+    if (signupCompleted) return;
+
+    const name = nameInput.value.trim();
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
+    const confirmPassword = confirmInput.value;
+
+    if (!name || name.length > 30) {
+        status.textContent =
+            "Your display name must be between 1 and 30 characters.";
+        return;
+    }
+
+    if (password.length < 8) {
+        status.textContent =
+            "Your password must contain at least 8 characters.";
+        return;
+    }
+
+    if (password !== confirmPassword) {
+        status.textContent =
+            "Passwords do not match.";
+        return;
+    }
+
+    button.disabled = true;
+    status.textContent =
+        "Creating your account and sending a verification email...";
+
+    let user = null;
+    let verificationSent = false;
+
+    try {
+        // Create the Firebase Authentication account
+        const credential = await createUserWithEmailAndPassword(
+            auth,
+            email,
+            password
+        );
+
+        user = credential.user;
+
+        // Set the user's display name
+        await updateProfile(user, {
+            displayName: name
+        });
+
+        // Save the user profile in Realtime Database
+        await set(ref(db, "users/" + user.uid), {
+            displayName: name
+        });
+
+        // Send an email verification link
+        await sendEmailVerification(user);
+        verificationSent = true;
+
+        // Sign out until the user verifies their email
+        await signOut(auth);
+
+        signupCompleted = true;
+
+        form.querySelectorAll("input").forEach(input => {
+            input.disabled = true;
+        });
+
+        button.textContent = "Verification Email Sent";
+
+        status.textContent =
+            "Your account has been created! A verification link " +
+            "has been sent to " + email +
+            ". Open your inbox and click the link to verify your email. " +
+            "Check your Spam folder if you cannot find the message. " +
+            "After verification, log in to access KDM.";
+
+    } catch (error) {
+        console.error("Signup error:", error);
+
+        if (user) {
+            try {
+                await signOut(auth);
+            } catch (signOutError) {
+                console.error("Sign-out error:", signOutError);
+            }
+
+            if (verificationSent) {
+                signupCompleted = true;
+
+                form.querySelectorAll("input").forEach(input => {
+                    input.disabled = true;
+                });
+
+                button.textContent = "Verification Email Sent";
+
+                status.textContent =
+                    "Your verification email has been sent, but another " +
+                    "step failed. Check your email and Firebase account " +
+                    "status before trying again.";
+            } else {
+                status.textContent =
+                    "Your account may have been created, but setup was " +
+                    "not completed. Check Firebase Authentication before " +
+                    "attempting to sign up again.";
+            }
+        } else {
+            const messages = {
+                "auth/email-already-in-use":
+                    "This email is already registered. Please log in.",
+                "auth/invalid-email":
+                    "Please enter a valid email address.",
+                "auth/weak-password":
+                    "Your password is too weak.",
+                "auth/operation-not-allowed":
+                    "Email/Password sign-in is not enabled in Firebase.",
+                "auth/too-many-requests":
+                    "Too many attempts. Please try again later.",
+                "auth/network-request-failed":
+                    "Network error. Check your internet connection."
+            };
+
+            status.textContent =
+                messages[error.code] ||
+                "Sign-up failed. Error: " +
+                (error.code || "unknown");
+        }
+
+        button.disabled = false;
+
+        if (!signupCompleted) {
+            button.textContent = "Create Account";
+        }
+    }
+});
+</script>
+
+</body>
+</html>

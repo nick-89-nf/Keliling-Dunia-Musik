@@ -1,0 +1,363 @@
+ <!-- ==================================================
+       https://console.firebase.google.com/project/keliling-dunia-musik-chat/database/keliling-dunia-musik-chat-default-rtdb/data?utm_source=chatgpt.com
+    ================================================== -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Log In | Keliling Dunia Musik</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    background: #1A0D00;
+    color: #F9E3A0;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 600px;
+    padding: 30px;
+    background: #2B1700;
+    border: 1px solid #80551D;
+    border-radius: 14px;
+}
+
+h1 {
+    text-align: center;
+    font-size: 25px;
+    margin-top: 0;
+}
+
+.subtitle {
+    text-align: center;
+    color: #D4B875;
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 25px;
+}
+
+label {
+    display: block;
+    margin: 16px 0 7px;
+    font-size: 14px;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #80551D;
+    border-radius: 7px;
+    background: #1A0D00;
+    color: #FFF5D9;
+    font-size: 15px;
+    outline: none;
+}
+
+input:focus {
+    border-color: #F9E3A0;
+}
+
+button {
+    width: 100%;
+    margin-top: 22px;
+    padding: 13px;
+    border: none;
+    border-radius: 7px;
+    background: #D4A64A;
+    color: #1A0D00;
+    font-weight: bold;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+#resend-button {
+    margin-top: 10px;
+    background: transparent;
+    color: #F9E3A0;
+    border: 1px solid #80551D;
+}
+
+#status {
+    font-size: 13px;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+}
+
+.links {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 14px;
+    line-height: 2;
+}
+
+a { color: #F9E3A0; }
+
+.hidden { display: none; }
+
+@media (max-width: 480px) {
+    .login-card { padding: 23px; }
+}
+</style>
+</head>
+
+<body>
+
+<main class="login-card">
+    <h1>Keliling Dunia Musik</h1>
+
+    <p class="subtitle">
+        Log in to continue your musical journey.
+    </p>
+
+    <form id="login-form">
+        <label for="email">Email Address</label>
+        <input
+            id="email"
+            type="email"
+            autocomplete="email"
+            placeholder="name@example.com"
+            required
+        >
+
+        <label for="password">Password</label>
+        <input
+            id="password"
+            type="password"
+            autocomplete="current-password"
+            placeholder="Enter your password"
+            required
+        >
+
+        <button id="login-button" type="submit">
+            Log In
+        </button>
+
+        <button
+            id="resend-button"
+            type="button"
+            class="hidden"
+        >
+            Resend Verification Email
+        </button>
+
+        <p id="status" role="status" aria-live="polite"></p>
+    </form>
+
+    <div class="links">
+        Don't have an account yet?
+        <a href="signup.html">Register</a>
+        <br>
+        <a href="index.html">← Back to Main Dashboard</a>
+    </div>
+</main>
+
+
+<script type="module">
+import { initializeApp } from
+    "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+    getAuth,
+    setPersistence,
+    browserLocalPersistence,
+    signInWithEmailAndPassword,
+    signOut,
+    reload,
+    sendEmailVerification
+} from
+    "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+const firebaseConfig = {
+    apiKey:  "AIzaSyA7EI83UKG_n6lwvNvH_ruqIvVtIstvVYw",
+    authDomain: "keliling-dunia-musik-chat.firebaseapp.com",
+    databaseURL: "https://keliling-dunia-musik-chat-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "keliling-dunia-musik-chat",
+    storageBucket: "keliling-dunia-musik-chat.firebasestorage.app",
+    messagingSenderId: "733182952839",
+    appId: "1:733182952839:web:7ac78e64b6182d8cb6ff22",
+    measurementId: "G-H0SXHRYSZR"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+await setPersistence(auth, browserLocalPersistence);
+
+auth.languageCode = "en";
+
+const form = document.getElementById("login-form");
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+const loginButton = document.getElementById("login-button");
+const resendButton = document.getElementById("resend-button");
+const status = document.getElementById("status");
+
+// Keep the resend option available when users return later.
+resendButton.classList.remove("hidden");
+
+function setBusy(isBusy) {
+    loginButton.disabled = isBusy;
+    resendButton.disabled = isBusy;
+}
+
+function getErrorMessage(error) {
+    const messages = {
+        "auth/invalid-credential":
+            "Email or password is incorrect.",
+        "auth/wrong-password":
+            "Email or password is incorrect.",
+        "auth/user-not-found":
+            "Email or password is incorrect.",
+        "auth/invalid-email":
+            "Please enter a valid email address.",
+        "auth/too-many-requests":
+            "Too many attempts. Please wait before trying again.",
+        "auth/network-request-failed":
+            "Network error. Check your internet connection.",
+        "auth/operation-not-allowed":
+            "Email and password sign-in is not enabled in Firebase.",
+        "auth/quota-exceeded":
+            "The email sending quota has been exceeded. Please try again later.",
+        "auth/unauthorized-continue-uri":
+            "The verification link configuration needs to be checked in Firebase.",
+        "auth/invalid-continue-uri":
+            "The verification link configuration is invalid."
+    };
+
+    return messages[error.code] ||
+        `Unable to complete the request (${error.code || "unknown error"}). Please try again later.`;
+}
+
+// Normal login
+form.addEventListener("submit", async event => {
+    event.preventDefault();
+
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
+
+    setBusy(true);
+    status.textContent = "Checking your account...";
+
+    let user = null;
+
+    try {
+        const credential = await signInWithEmailAndPassword(
+            auth,
+            email,
+            password
+        );
+
+        user = credential.user;
+
+        await reload(user);
+
+    console.log("LOGIN USER:", user.uid);
+console.log("AUTH CURRENT USER:", auth.currentUser?.uid ?? null);
+
+console.log("USER FROM CREDENTIAL:", user);
+console.log("CURRENT USER:", auth.currentUser);
+console.log("EMAIL VERIFIED:", user.emailVerified);
+
+status.textContent = "Login successful. Opening your profile...";
+window.location.replace("profile.html");
+    } catch (error) {
+        console.error("Login error:", error);
+        status.textContent = getErrorMessage(error);
+
+        if (user) {
+            try {
+                await signOut(auth);
+            } catch (signOutError) {
+                console.error("Sign-out error:", signOutError);
+            }
+        }
+    } finally {
+        setBusy(false);
+    }
+});
+
+// Resend verification email
+resendButton.addEventListener("click", async () => {
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
+
+    if (!email || !password) {
+        status.textContent =
+            "Enter your account email and password first.";
+        return;
+    }
+
+    setBusy(true);
+    status.textContent = "Checking your account...";
+
+    let user = null;
+
+    try {
+        const credential = await signInWithEmailAndPassword(
+            auth,
+            email,
+            password
+        );
+
+        user = credential.user;
+
+        await reload(user);
+
+        if (user.emailVerified) {
+            await signOut(auth);
+            user = null;
+
+            status.textContent =
+                "Your email is already verified. You can log in now.";
+
+            return;
+        }
+
+        status.textContent = "Sending a new verification email...";
+
+        await sendEmailVerification(user);
+
+        await signOut(auth);
+        user = null;
+
+        status.textContent =
+            "A new verification email has been sent. " +
+            "Check your inbox and Spam folder. " +
+            "If it does not arrive, wait a little before requesting another.";
+
+    } catch (error) {
+        console.error("Resend verification error:", error);
+        status.textContent = getErrorMessage(error);
+
+    } finally {
+        if (user) {
+            try {
+                await signOut(auth);
+            } catch (signOutError) {
+                console.error("Sign-out error:", signOutError);
+            }
+        }
+
+        setBusy(false);
+    }
+});
+</script>
+
+</body>
+</html>

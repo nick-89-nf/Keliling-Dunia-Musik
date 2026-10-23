@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chat Komunitas | KDM</title>
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; font-family: Arial, sans-serif; background: #1A0D00; color: #F9E3A0; }
+header {
+    min-height: 70px; padding: 12px 24px; display: flex; align-items: center;
+    justify-content: space-between; gap: 12px; background: #2B1700;
+    border-bottom: 1px solid #80551D;
+}
+header h2 { margin: 0; font-size: 22px; }
+.header-actions { display: flex; align-items: center; gap: 16px; }
+header a { color: #F9E3A0; text-decoration: none; font-size: 14px; }
+header a:hover { color: #FFFFFF; }
+.logout-button {
+    border: 1px solid #80551D; border-radius: 7px; padding: 8px 11px;
+    background: #1A0D00; color: #F9E3A0; cursor: pointer;
+}
+
+.profile-instrument-label {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin: 0;
+    color: #D4B875;
+    font-size: 14px;
+}
+
+.profile-instrument-label span:first-child {
+    color: #F9E3A0;
+}
+
+/* Tombol foto dan nama profil di dalam chat */
+.message-avatar,
+.message-name {
+    cursor: pointer;
+}
+
+.message-avatar:hover,
+.message-name:hover {
+    filter: brightness(1.2);
+}
+
+.message-name:hover {
+    text-decoration: underline;
+}
+
+/* Background modal */
+.profile-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.78);
+}
+
+.profile-modal.hidden {
+    display: none;
+}
+
+/* Kartu preview */
+.profile-modal-card {
+    position: relative;
+    width: 100%;
+    max-width: 1200px;
+    max-height: 85dvh;
+    overflow-y: auto;
+    padding: 28px 24px;
+    text-align: left;
+    color: #FFF5D9;
+    background: #2B1700;
+    border: 1px solid #D4A64A;
+    border-radius: 16px;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.45);
+}
+
+.profile-modal-close {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+    border: 1px solid #80551D;
+    border-radius: 50%;
+    color: #F9E3A0;
+    background: #1A0D00;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.profile-modal-content {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    text-align: left;
+}
+
+.profile-modal-avatar {
+    width: 120px;
+    height: 120px;
+    flex-shrink: 0;
+    margin: 0;
+     border: 3px solid #D4A64A;
+    border-radius: 50%;
+     overflow: hidden;
+    /* Properti lain yang sudah ada boleh dipertahankan */
+}
+
+.profile-modal-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    min-width: 0;
+}
+
+.profile-modal-info h2,
+.profile-modal-info p {
+    margin: 0;
+}
+
+
+.profile-modal-avatar img {
+    display: none;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-modal-avatar img.visible {
+    display: block;
+}
+
+#public-profile-name {
+    margin: 0 0 8px;
+    overflow-wrap: anywhere;
+    color: #F9E3A0;
+    font-size: 24px;
+}
+
+#public-profile-instrument {
+    margin: 0 0 22px;
+    color: #D4B875;
+    font-size: 14px;
+}
+
+.public-profile-section {
+    margin-top: 16px;
+    padding: 16px;
+    text-align: left;
+    background: #1A0D00;
+    border: 1px solid #63421F;
+    border-radius: 10px;
+}
+
+.public-profile-section h4 {
+    margin: 0 0 9px;
+    color: #F9E3A0;
+    font-size: 14px;
+}
+
+.public-profile-section p {
+    margin: 0;
+    color: #FFF5D9;
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+}
+
+.public-profile-empty {
+    color: #B9A47A !important;
+    font-style: italic;
+}
+
+@media (max-width: 480px) {
+    .profile-modal-card {
+        padding: 26px 18px;
+    }
+
+    .profile-modal-avatar {
+        width: 125px;
+        height: 125px;
+    }
+}
+
+
+.logout-button:disabled { opacity: .6; cursor: wait; }
+
+.chat-container { width: 100%;
+                 max-width: 1500px; 
+                 height: calc(100dvh - 100px); 
+                 min-height: 300px; margin: 15px auto; 
+                 padding: 0 15px; }
+
+.chat-box { width: 100%;
+             height: 100%;
+             background: #2B1700; border: 1px solid #80551D; border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; }
+.chat-profile { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 15px; border-bottom: 1px solid #80551D; }
+.profile-label { font-size: 12px; color: #D4B875; }
+.profile-name { font-size: 15px; font-weight: bold; overflow-wrap: anywhere; }
+.chat-status { padding: 8px 15px; font-size: 12px; color: #D4B875; border-bottom: 1px solid #493019; }
+.messages { flex: 1; min-height: 0; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 12px; scroll-behavior: smooth; }
+.empty-message { margin: auto; text-align: center; color: #B9A47A; font-size: 14px; line-height: 1.7; }
+.message { max-width: 80%; align-self: flex-start; padding: 10px 12px; background: #41280F; border: 1px solid #63421F; border-radius: 10px 10px 10px 2px; overflow-wrap: anywhere; }
+
+/* Baris pesan dan foto profil */
+.message-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    max-width: 90%;
+    align-self: flex-start;
+}
+
+.message-row.own-message {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+}
+
+.message-avatar {
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+    border-radius: 50%;
+    border: 1px solid #D4A64A;
+    background: #1A0D00;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    color: #F9E3A0;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+.message-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none;
+}
+
+.message-avatar img.visible {
+    display: block;
+}
+
+.message-bubble {
+    min-width: 0;
+    max-width: calc(100% - 42px);
+    padding: 10px 12px;
+    background: #41280F;
+    border: 1px solid #63421F;
+    border-radius: 10px 10px 10px 2px;
+    overflow-wrap: anywhere;
+}
+
+.message-row.own-message .message-bubble {
+    background: #533719;
+    border-radius: 10px 10px 2px 10px;
+}
+
+@media (max-width: 600px) {
+    .message-row {
+        max-width: 96%;
+    }
+}
+
+.message.own-message { align-self: flex-end; background: #533719; border-radius: 10px 10px 2px 10px; }
+.message-name { margin-bottom: 5px; font-size: 12px; font-weight: bold; color: #F9E3A0; }
+.message-text { color: #FFF5D9; white-space: pre-wrap; line-height: 1.5; font-size: 14px; }
+.message-time { margin-top: 6px; text-align: right; font-size: 10px; color: #D4B875; }
+.chat-form { display: flex; align-items: flex-end; gap: 10px; padding: 12px; border-top: 1px solid #80551D; background: #241302; }
+.message-input { flex: 1; min-width: 0; min-height: 42px; max-height: 120px; resize: vertical; padding: 11px; background: #1A0D00; color: #FFF5D9; border: 1px solid #80551D; border-radius: 8px; font: inherit; font-size: 14px; outline: none; }
+.message-input:focus { border-color: #F9E3A0; }
+.send-button { min-height: 42px; padding: 0 18px; border: 1px solid #F9E3A0; border-radius: 8px; background: #D4A64A; color: #1A0D00; font-weight: bold; cursor: pointer; }
+.send-button:hover { background: #F9E3A0; }
+.send-button:disabled { opacity: .5; cursor: not-allowed; }
+.chat-note { padding: 0 12px 10px; background: #241302; color: #B9A47A; font-size: 11px; }
+@media (max-width: 600px) {
+    header { padding: 12px 15px; }
+    header h2 { font-size: 18px; }
+    .header-actions { gap: 10px; }
+    .chat-container { height: calc(100dvh - 85px); margin: 10px auto; padding: 0 10px; }
+    .chat-profile { padding: 10px; }
+    .messages { padding: 10px; }
+    .message { max-width: 90%; }
+    .chat-form { gap: 7px; padding: 9px; }
+    .send-button { padding: 0 12px; font-size: 13px; }
+}
+</style>
+</head>
+<body>
+<header>
+    <h2>Chat Komunitas</h2>
+    <div class="header-actions">
+        <a href="index.html">← Back to Main Dashboard</a>
+        <button class="logout-button" id="logout-button" type="button">Logout</button>
+    </div>
+</header>
+
+<main class="chat-container">
+    <section class="chat-box">
+        <div class="chat-profile">
+            <div>
+                <div class="profile-label">Login as</div>
+                <div class="profile-name" id="profile-name">Checking Account...</div>
+            </div>
+        </div>
+        <div class="chat-status" id="chat-status">Memeriksa sesi login...</div>
+        <div class="messages" id="messages" aria-live="polite">
+            <div class="empty-message" id="empty-message">Memuat percakapan komunitas...</div>
+        </div>
+        <form class="chat-form" id="chat-form">
+            <textarea class="message-input" id="message-input" maxlength="500" rows="1"
+                placeholder="Message..." aria-label="Tulis pesan" required disabled></textarea>
+            <button class="send-button" id="send-button" type="submit" disabled>Send</button>
+        </form>
+           </section>
+</main>
+
+
+
+<div id="profile-modal" class="profile-modal hidden">
+    <section
+        class="profile-modal-card"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="public-profile-name"
+    >
+        <button
+            id="close-profile-modal"
+            class="profile-modal-close"
+            type="button"
+            aria-label="Tutup profil"
+        >×</button>
+
+        <div class="profile-modal-content">
+            <div class="profile-modal-avatar">
+                <img id="public-profile-image" alt="Foto profil pengguna">
+                <span id="public-profile-initials">KDM</span>
+            </div>
+
+            <div class="profile-modal-info">
+                <h2 id="public-profile-name">Loading profile...</h2>
+               <p class="profile-instrument-label">
+        <span>Instrument:</span>
+        <span id="public-profile-instrument">Guitar</span>
+    </p>
+            </div>
+        </div>
+
+        <div class="public-profile-section">
+            <h4>Bio / Deskripsi</h4>
+            <p id="public-profile-bio">Loading Information...</p>
+        </div>
+    </section>
+</div>
+
+
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+    getAuth, onAuthStateChanged, signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+    getDatabase, ref, push, set, get, query, limitToLast,
+    onChildAdded, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+// Gunakan konfigurasi web app dari Firebase Console.
+const firebaseConfig = {
+    apiKey: "AIzaSyA7EI83UKG_n6lwvNvH_ruqIvVtIstvVYw",
+    authDomain: "keliling-dunia-musik-chat.firebaseapp.com",
+    databaseURL: "https://keliling-dunia-musik-chat-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "keliling-dunia-musik-chat",
+    storageBucket: "keliling-dunia-musik-chat.firebasestorage.app",
+    messagingSenderId: "733182952839",
+    appId: "1:733182952839:web:7ac78e64b6182d8cb6ff22",
+    measurementId: "G-H0SXHRYSZR"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+
+const profileName = document.getElementById("profile-name");
+const messagesBox = document.getElementById("messages");
+const messageInput = document.getElementById("message-input");
+const sendButton = document.getElementById("send-button");
+const chatForm = document.getElementById("chat-form");
+const chatStatus = document.getElementById("chat-status");
+const emptyMessage = document.getElementById("empty-message");
+const logoutButton = document.getElementById("logout-button");
+
+
+const profileModal = document.getElementById("profile-modal");
+const closeProfileModal = document.getElementById("close-profile-modal");
+const publicProfileImage = document.getElementById("public-profile-image");
+const publicProfileInitials = document.getElementById("public-profile-initials");
+const publicProfileName = document.getElementById("public-profile-name");
+const publicProfileInstrument = document.getElementById("public-profile-instrument");
+const publicProfileBio = document.getElementById("public-profile-bio");
+
+function profileInitials(name) {
+    return (name || "KDM")
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean)
+        .slice(0, 2)
+        .map(part => Array.from(part)[0])
+        .join("")
+        .toUpperCase() || "KDM";
+}
+
+async function showPublicProfile(uid, fallbackName = "Pengguna KDM") {
+    if (!uid) return;
+
+    profileModal.classList.remove("hidden");
+    publicProfileName.textContent = "Memuat profil...";
+    publicProfileInstrument.textContent = "";
+    publicProfileBio.textContent = "Memuat informasi...";
+    publicProfileImage.removeAttribute("src");
+    publicProfileImage.classList.remove("visible");
+    publicProfileInitials.textContent = profileInitials(fallbackName);
+    publicProfileInitials.style.display = "block";
+
+    try {
+        const snapshot = await get(ref(db, "publicProfiles/" + uid));
+        const profile = snapshot.exists() ? snapshot.val() : {};
+
+        const name =
+            typeof profile.displayName === "string" &&
+            profile.displayName.trim()
+                ? profile.displayName.trim()
+                : fallbackName;
+
+        const instrument =
+            typeof profile.instrument === "string"
+                ? profile.instrument.trim()
+                : "";
+
+        const bio =
+            typeof profile.bio === "string"
+                ? profile.bio.trim()
+                : "";
+
+        publicProfileName.textContent = name;
+        publicProfileInstrument.textContent =
+            instrument || "Instrumen belum ditambahkan";
+
+        publicProfileBio.textContent =
+            bio || "Pengguna ini belum menulis bio.";
+
+        publicProfileInitials.textContent = profileInitials(name);
+
+        // Hanya tampilkan URL gambar HTTPS.
+        if (typeof profile.photoURL === "string" && profile.photoURL) {
+            try {
+                const photoUrl = new URL(profile.photoURL);
+
+                if (photoUrl.protocol === "https:") {
+                    publicProfileImage.onload = () => {
+                        publicProfileImage.classList.add("visible");
+                        publicProfileInitials.style.display = "none";
+                    };
+
+                    publicProfileImage.onerror = () => {
+                        publicProfileImage.classList.remove("visible");
+                        publicProfileInitials.style.display = "block";
+                    };
+
+                    publicProfileImage.src = photoUrl.href;
+                }
+            } catch (error) {
+                console.warn("URL foto profil tidak valid.");
+            }
+        }
+    } catch (error) {
+        console.error("Gagal memuat preview profil:", error);
+        publicProfileName.textContent = fallbackName;
+        publicProfileInstrument.textContent = "Profil tidak dapat dimuat.";
+        publicProfileBio.textContent =
+            "Periksa koneksi dan izin baca Firebase Realtime Database.";
+    }
+}
+
+function hidePublicProfile() {
+    profileModal.classList.add("hidden");
+}
+
+closeProfileModal.addEventListener("click", hidePublicProfile);
+
+profileModal.addEventListener("click", event => {
+    if (event.target === profileModal) {
+        hidePublicProfile();
+    }
+});
+
+document.addEventListener("keydown", event => {
+    if (event.key === "Escape") {
+        hidePublicProfile();
+    }
+});
+
+
+let currentUser = null;
+let currentDisplayName = "";
+let sending = false;
+let messagesStarted = false;
+
+function setStatus(message) {
+    chatStatus.textContent = message;
+}
+
+function showEmptyMessage(message) {
+    if (!messagesBox.querySelector(".empty-message")) {
+        const empty = document.createElement("div");
+        empty.className = "empty-message";
+        empty.textContent = message;
+        messagesBox.appendChild(empty);
+    } else {
+        messagesBox.querySelector(".empty-message").textContent = message;
+    }
+}
+
+
+const profileCache = new Map();
+
+function getPublicProfile(uid) {
+    if (!uid) return Promise.resolve({});
+
+    if (!profileCache.has(uid)) {
+        const request = get(ref(db, "publicProfiles/" + uid))
+            .then(snapshot => snapshot.exists() ? snapshot.val() : {})
+            .catch(error => {
+                console.error("Gagal memuat profil:", error);
+                return {};
+            });
+
+        profileCache.set(uid, request);
+    }
+
+    return profileCache.get(uid);
+}
+
+function getInitials(name) {
+    return (name || "KDM")
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean)
+        .slice(0, 2)
+        .map(part => Array.from(part)[0])
+        .join("")
+        .toUpperCase() || "KDM";
+}
+
+function displayMessage(snapshot) {
+    const message = snapshot.val();
+
+    if (
+        !message ||
+        typeof message.text !== "string" ||
+        typeof message.name !== "string"
+    ) return;
+
+    const existingEmpty = messagesBox.querySelector(".empty-message");
+    if (existingEmpty) existingEmpty.remove();
+
+    // Baris pesan
+    const row = document.createElement("article");
+    row.className = "message-row";
+
+    if (currentUser && message.uid === currentUser.uid) {
+        row.classList.add("own-message");
+    }
+
+    // Foto profil dengan fallback inisial
+    const avatar = document.createElement("div");
+    avatar.className = "message-avatar";
+
+    const initials = document.createElement("span");
+    initials.textContent = getInitials(message.name);
+
+    const image = document.createElement("img");
+    image.alt = "Foto profil " + message.name;
+
+    avatar.append(initials, image);
+
+    image.onload = () => {
+        image.classList.add("visible");
+        initials.style.display = "none";
+    };
+
+    image.onerror = () => {
+        image.classList.remove("visible");
+        initials.style.display = "block";
+    };
+
+    // Isi pesan
+    const bubble = document.createElement("div");
+    bubble.className = "message-bubble";
+
+    const name = document.createElement("div");
+    name.className = "message-name";
+    name.textContent = message.name;
+
+
+avatar.title = "Lihat profil " + message.name;
+avatar.setAttribute("role", "button");
+avatar.setAttribute("tabindex", "0");
+avatar.setAttribute("aria-label", "Lihat profil " + message.name);
+
+name.title = "Lihat profil " + message.name;
+name.setAttribute("role", "button");
+name.setAttribute("tabindex", "0");
+
+const openProfile = () => {
+    showPublicProfile(message.uid, message.name);
+};
+
+avatar.addEventListener("click", openProfile);
+name.addEventListener("click", openProfile);
+
+avatar.addEventListener("keydown", event => {
+    if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        openProfile();
+    }
+});
+
+name.addEventListener("keydown", event => {
+    if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        openProfile();
+    }
+});
+
+
+    const text = document.createElement("div");
+    text.className = "message-text";
+    text.textContent = message.text;
+
+    const time = document.createElement("div");
+    time.className = "message-time";
+
+    time.textContent = typeof message.timestamp === "number"
+        ? new Date(message.timestamp).toLocaleTimeString("id-ID", {
+            hour: "2-digit",
+            minute: "2-digit"
+        })
+        : "Baru saja";
+
+    bubble.append(name, text, time);
+    row.append(avatar, bubble);
+    messagesBox.appendChild(row);
+
+    // Ambil foto berdasarkan UID pengirim.
+    // Pesan lama juga dapat menampilkan foto jika profilnya tersedia.
+    getPublicProfile(message.uid).then(profile => {
+        if (!profile || typeof profile.photoURL !== "string") return;
+
+        try {
+            const url = new URL(profile.photoURL);
+
+            if (url.protocol !== "https:") return;
+
+            image.src = url.href;
+        } catch {
+            // URL tidak valid: tetap tampilkan inisial.
+        }
+    });
+
+    // Batasi jumlah elemen pesan seperti kode sebelumnya.
+    while (messagesBox.children.length > 100) {
+        messagesBox.firstElementChild.remove();
+    }
+
+    messagesBox.scrollTop = messagesBox.scrollHeight;
+}
+
+
+async function loadProfileName(user) {
+    const authName = user.displayName?.trim();
+    if (authName) return authName.slice(0, 30);
+
+    try {
+        const profileSnapshot = await get(ref(db, "users/" + user.uid + "/displayName"));
+        const dbName = profileSnapshot.val();
+        if (typeof dbName === "string" && dbName.trim()) return dbName.trim().slice(0, 30);
+    } catch (error) {
+        console.error("Gagal membaca profil:", error);
+    }
+    return user.email || "Pengguna KDM";
+}
+
+function startMessageListener() {
+    if (messagesStarted) return;
+    messagesStarted = true;
+    const recentMessages = query(ref(db, "messages"), limitToLast(100));
+    onChildAdded(recentMessages, displayMessage, error => {
+        console.error(error);
+        setStatus("Gagal memuat pesan. Periksa Rules database.");
+    });
+}
+
+onAuthStateChanged(auth, async user => {
+    // Sesi anonim lama tidak dianggap sebagai akun KDM.
+    if (!user || user.isAnonymous) {
+        if (user?.isAnonymous) {
+            try { await signOut(auth); } catch (error) { console.error(error); }
+        }
+        window.location.replace("login.html");
+        return;
+    }
+
+    currentUser = user;
+    sendButton.disabled = true;
+    messageInput.disabled = true;
+    setStatus("Loading...");
+
+    currentDisplayName = await loadProfileName(user);
+    profileName.textContent = currentDisplayName;
+    startMessageListener();
+    setStatus("Connected");
+    sendButton.disabled = false;
+    messageInput.disabled = false;
+});
+
+logoutButton.addEventListener("click", async () => {
+    logoutButton.disabled = true;
+    setStatus("Disconnected...");
+    try {
+        await signOut(auth);
+        window.location.replace("login.html");
+    } catch (error) {
+        console.error(error);
+        setStatus("Logout gagal: " + error.message);
+        logoutButton.disabled = false;
+    }
+});
+
+chatForm.addEventListener("submit", async event => {
+    event.preventDefault();
+    if (!currentUser || sending) return;
+
+    const text = messageInput.value.trim();
+    if (!text) return;
+    if (text.length > 500) {
+        setStatus("Pesan maksimal 500 karakter.");
+        return;
+    }
+
+    sending = true;
+    sendButton.disabled = true;
+    try {
+        const messageRef = push(ref(db, "messages"));
+        await set(messageRef, {
+            uid: currentUser.uid,
+            name: currentDisplayName,
+            text,
+            timestamp: serverTimestamp()
+        });
+        messageInput.value = "";
+        setStatus("Pesan berhasil dikirim.");
+    } catch (error) {
+        console.error(error);
+        setStatus("Pesan gagal dikirim. Periksa Rules database: " + error.message);
+    } finally {
+        sending = false;
+        sendButton.disabled = !currentUser;
+        messageInput.focus();
+    }
+});
+
+// Enter untuk mengirim, Shift+Enter untuk membuat baris baru.
+messageInput.addEventListener("keydown", event => {
+    if (event.key === "Enter" && !event.shiftKey && !event.isComposing) {
+        event.preventDefault();
+        if (!sendButton.disabled) chatForm.requestSubmit();
+    }
+});
+</script>
+</body>
+</html>
