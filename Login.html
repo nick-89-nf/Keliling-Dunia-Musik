@@ -244,6 +244,7 @@ function getErrorMessage(error) {
         `Unable to complete the request (${error.code || "unknown error"}). Please try again later.`;
 }
 
+```javascript
 // Normal login
 form.addEventListener("submit", async event => {
     event.preventDefault();
@@ -267,18 +268,40 @@ form.addEventListener("submit", async event => {
 
         await reload(user);
 
-    console.log("LOGIN USER:", user.uid);
-console.log("AUTH CURRENT USER:", auth.currentUser?.uid ?? null);
+        // Always read the latest user state from Firebase.
+        user = auth.currentUser;
 
-console.log("USER FROM CREDENTIAL:", user);
-console.log("CURRENT USER:", auth.currentUser);
-console.log("EMAIL VERIFIED:", user.emailVerified);
+        console.log("LOGIN USER UID:", user?.uid ?? null);
+        console.log("CURRENT USER UID:", auth.currentUser?.uid ?? null);
+        console.log("EMAIL VERIFIED:", user?.emailVerified ?? null);
 
-status.textContent = "Login successful. Opening your profile...";
-window.location.replace("profile.html");
+        if (!user) {
+            throw new Error("Firebase did not return an active user session.");
+        }
+
+        if (!user.emailVerified) {
+            await signOut(auth);
+
+            user = null;
+
+            status.textContent =
+                "Your email has not been verified yet. " +
+                "Use the Resend Verification Email button, " +
+                "then verify your email before logging in.";
+
+            return;
+        }
+
+        status.textContent =
+            "Login successful. Opening your profile...";
+
+        window.location.replace("profile.html");
+
     } catch (error) {
         console.error("Login error:", error);
-        status.textContent = getErrorMessage(error);
+
+        status.textContent =
+            getErrorMessage(error);
 
         if (user) {
             try {
@@ -287,11 +310,12 @@ window.location.replace("profile.html");
                 console.error("Sign-out error:", signOutError);
             }
         }
+
     } finally {
         setBusy(false);
     }
 });
-
+```
 // Resend verification email
 resendButton.addEventListener("click", async () => {
     const email = emailInput.value.trim();
