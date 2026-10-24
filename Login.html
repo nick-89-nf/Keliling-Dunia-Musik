@@ -126,7 +126,7 @@ a { color: #F9E3A0; }
         Log in to continue your musical journey.
     </p>
 
-    <form id="login-form">
+   <form id="login-form" method="post">
         <label for="email">Email Address</label>
         <input
             id="email"
@@ -248,6 +248,8 @@ function getErrorMessage(error) {
 // Normal login
 form.addEventListener("submit", async event => {
     event.preventDefault();
+
+    console.log("LOGIN FORM HANDLER RUNNING");
 
     const email = emailInput.value.trim();
     const password = passwordInput.value;
